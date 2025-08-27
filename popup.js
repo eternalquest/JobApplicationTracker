@@ -1,43 +1,40 @@
-sheetURL="https://script.google.com/macros/s/AKfycbwx5qd1NAAS-_S3UMNSm_HuCb9ts2h5oRFHDdls4ROPuwDFC8C2upkYgL6eggiFzAwOqQ/exec"
+const sheetURL = "https://script.google.com/macros/s/AKfycbzk758XKuKoUawo8jp-CVRWdXraf4ALp4oqyLl6z32iI_7IB1JOSlHOme1iOdiSfzyjeA/exec"; // <-- Replace this
 
 document.addEventListener("DOMContentLoaded", () => {
-    const feedbackEl = document.getElementById("feedback");
+  const feedbackEl = document.getElementById("feedback");
 
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const tab = tabs[0];
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    const tab = tabs[0];
 
-        // Only try if the tab is HTTP/HTTPS
-        if (!tab.url.startsWith("http")) {
-            feedbackEl.textContent = "Cannot extract data from this page.";
-            return;
-        }
+    if (!tab.url.startsWith("http")) {
+      feedbackEl.textContent = "Cannot extract data from this page.";
+      return;
+    }
 
-        // Request job data from content.js
-        chrome.tabs.sendMessage(tab.id, { action: "getJobData" }, (response) => {
-            if (chrome.runtime.lastError || !response) {
-                feedbackEl.textContent = "No job data found on this page.";
-                return;
-            }
+    chrome.tabs.sendMessage(tab.id, { action: "getJobData" }, (response) => {
+      if (chrome.runtime.lastError || !response) {
+        feedbackEl.textContent = "❌ Failed to get job data.";
+        return;
+      }
 
-            const jobData = {
-                company: response.company || tab.title,
-                position: response.jobTitle || "Unknown Position",
-                location: response.location || "",
-                url: tab.url,
-                status: "Applied",
-                notes: response.notes || "",
-                date: new Date().toLocaleDateString()
-            };
+      const jobData = {
+        company: response.company,
+        position: response.jobTitle,
+        location: response.location,
+        url: response.url,
+        status: "Applied",
+        notes: "",
+        date: new Date().toLocaleDateString()
+      };
 
-            // Send to Google Sheets
-            fetch(sheetURL, {
-                method: "POST",
-                body: JSON.stringify(jobData),
-                headers: { "Content-Type": "application/json" }
-            })
-            .then(res => res.text())
-            .then(() => feedbackEl.textContent = "✅ Job application saved!")
-            .catch(() => feedbackEl.textContent = "❌ Failed to save");
-        });
+      fetch(sheetURL, {
+        method: "POST",
+        body: JSON.stringify(jobData),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(res => res.text())
+      .then(() => feedbackEl.textContent = "✅ Job saved successfully!")
+      .catch(() => feedbackEl.textContent = "❌ Failed to save");
     });
+  });
 });
