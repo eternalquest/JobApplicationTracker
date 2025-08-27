@@ -5,12 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Job Tracker</title>
 <style>
-  body { font-family: sans-serif; padding: 10px; width: 220px; }
-  #feedback { margin-top: 10px; color: green; }
+  body { font-family: sans-serif; padding: 10px; width: 250px; }
+  input, select, textarea { width: 100%; margin-bottom: 8px; }
+  #feedback { margin-top: 10px; font-weight: bold; }
 </style>
 </head>
 <body>
-  <div id="feedback">Fetching job data...</div>
+  <label>Company:</label>
+  <input type="text" id="company" placeholder="Company name">
+
+  <label>Position / Role:</label>
+  <input type="text" id="position" placeholder="Job title">
+
+  <label>Status:</label>
+  <select id="status">
+    <option>Applied</option>
+    <option>Interview</option>
+    <option>Offer</option>
+    <option>Rejected</option>
+  </select>
+
+  <label>Notes:</label>
+  <textarea id="notes" placeholder="Optional notes"></textarea>
+
+  <label>URL:</label>
+  <input type="text" id="url" placeholder="Job posting URL">
+
+  <button id="saveBtn">Save Job</button>
+  <div id="feedback"></div>
+
   <script src="popup.js"></script>
 </body>
 </html>
